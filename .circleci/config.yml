@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Build
           command: |            
-            ~/gintelandr/gradlew build
+            ~/gintelandr/gradlew build -x test
             mkdir -p /tmp/gintelandr
             unzip ~/gintelandr/build/distributions/gintelandr.zip -d /tmp
             chmod +x /tmp/gintelandr/bin/gintelandr
@@ -45,7 +45,8 @@ jobs:
     steps:
       - run:
           name: Test
-          command: ls -la
+          command: |
+
   j-deploy:
     docker:
       - image: circleci/golang:1.12      
