@@ -23,7 +23,7 @@ jobs:
           command: |            
             ~/gintelandr/gradlew build
             mkdir -p /tmp/gintelandr
-            unzip ~/gintelandr/build/distribution/gintelandr.zip -d /tmp/gintelandr
+            unzip ~/gintelandr/build/distributions/gintelandr.zip -d /tmp/gintelandr
             chmod +x /tmp/gintelandr/bin/gintelandr
             GINTELANDR_CONSOLE=/tmp/gintelandr/bin/gintelandr
             echo $($GINTELANDR_CONSOLE --version)
