@@ -26,7 +26,12 @@ jobs:
             unzip ~/gintelandr/build/distributions/gintelandr.zip -d /tmp
             chmod +x /tmp/gintelandr/bin/gintelandr
             GINTELANDR_CONSOLE=/tmp/gintelandr/bin/gintelandr
-            echo $($GINTELANDR_CONSOLE --version)
+            VERSION=$($GINTELANDR_CONSOLE --version)
+            cp ~/gintelandr/build/distributions/gintelandr.tar /tmp/artifacts/gintelandr-$VERSION.tar
+            cp ~/gintelandr/build/distributions/gintelandr.zip /tmp/artifacts/gintelandr-$VERSION.zip
+            cp ~/gath/README.md /tmp/artifacts
+            cp ~/gath/HISTORY.md /tmp/artifacts
+
       - store_artifacts:
           path: /tmp/artifacts
           destination: ./        
