@@ -12,12 +12,6 @@ plugins {
     id 'application'
 }
 
-tasks.withType(JavaCompile) {
-   doFirst {
-      println "Args for for $name are $options.allCompilerArgs"
-   }
-} 
-
 repositories {
     mavenCentral()
 }

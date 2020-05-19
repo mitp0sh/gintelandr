@@ -18,23 +18,23 @@ public class GintelandrCommandLineParser {
 	
 	protected static final String OPTION_STRING_HELP = "h";
 	protected static final String OPTION_STRING_HELP_LONG = "help";
-	protected static final String OPTION_STRING_VERBOSE = "v";
-	protected static final String OPTION_STRING_VERBOSE_LONG = "verbose";
+	protected static final String OPTION_STRING_VERSION = "v";
+	protected static final String OPTION_STRING_VERSION_LONG = "version";
 	protected static final String OPTION_STRING_INPUT = "i";
 	protected static final String OPTION_STRING_INPUT_LONG = "input";
 	
 	static {		
 		Option helpOption = new Option(OPTION_STRING_HELP, OPTION_STRING_HELP_LONG, false, "show this help");
 		helpOption.setArgs(0);
-		Option verboseOption = new Option(OPTION_STRING_VERBOSE, OPTION_STRING_VERBOSE_LONG, false, "enable verbose output");
-		verboseOption.setArgs(0);
+		Option versionOption = new Option(OPTION_STRING_VERSION, OPTION_STRING_VERSION_LONG, false, "show version information");
+		versionOption.setArgs(0);
 		Option inputOption = new Option(OPTION_STRING_INPUT, OPTION_STRING_INPUT_LONG, false, "specify input, either file or directories, multiple seperated by ','");
 		inputOption.setArgs(1);
 		inputOption.setValueSeparator('|');
 		
 		/* register all available options */
 		OPTIONS.addOption(helpOption);
-		OPTIONS.addOption(verboseOption);
+		OPTIONS.addOption(versionOption);
 		OPTIONS.addOption(inputOption);
 	}
 	
@@ -52,6 +52,7 @@ class GintelandrCommandLine{
 	private CommandLine cml = null;
 	private ArrayList<String> inputStrList = new ArrayList<>();	
 	private ArrayList<File> inputFileList = new ArrayList<>();
+	private String versionInformation = new Versioning().toString();
 
 	public GintelandrCommandLine(CommandLine cml) throws ParseException {
 		super();
@@ -95,8 +96,8 @@ class GintelandrCommandLine{
 		return cml.hasOption(GintelandrCommandLineParser.OPTION_STRING_HELP);
 	}	
 
-	public boolean isVerbose() {
-		return cml.hasOption(GintelandrCommandLineParser.OPTION_STRING_VERBOSE);
+	public boolean isVersion() {
+		return cml.hasOption(GintelandrCommandLineParser.OPTION_STRING_VERSION);
 	}
 	
 	public boolean isInput() {
@@ -112,12 +113,18 @@ class GintelandrCommandLine{
 	}
 	
 	public ArrayList<File> inputListAsFiles() {
-		
-		
 		return inputFileList;
 	}
 	
+	public String getVersionInformation() {
+		return versionInformation;
+	}
+	
 	private boolean validateCommandLine() {		
+		if(isVersion()) {
+			return true;
+		}
+		
 		if(inputFileList.size() == 0) {
 			LAST_ERROR = "specified input is neither file nor directory";
 			return false;

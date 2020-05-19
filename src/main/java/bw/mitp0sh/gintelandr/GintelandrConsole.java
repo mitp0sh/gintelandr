@@ -15,10 +15,14 @@ public class GintelandrConsole {
 		GintelandrCommandLineParser commandLineParser = new GintelandrCommandLineParser();
 		try {
 			cml = commandLineParser.parse(args);
-		} catch (org.apache.commons.cli.ParseException e) {
-			e.printStackTrace();
+		} catch (org.apache.commons.cli.ParseException e) {			
 			flog.atSevere().log("unable to parse specified commandline");
 			GintelandrCommandLine.printHelp(null);
+			return;
+		}
+		
+		if(cml.isVersion()) {
+			System.out.println(cml.getVersionInformation());
 			return;
 		}
 		
