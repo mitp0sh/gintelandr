@@ -46,7 +46,5 @@ public class GintelandrConsole {
 				analysisList.add(currentAnalysis);
 			}
 		}
-		
-		System.out.println(analysisList.size());
 	}
 }

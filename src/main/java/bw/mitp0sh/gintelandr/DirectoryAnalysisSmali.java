@@ -2,9 +2,9 @@ package bw.mitp0sh.gintelandr;
 
 import java.io.File;
 
-public class APKAnalysis extends AbstractAnalysis {
-	public APKAnalysis(AbstractAnalysis parent) {
-		super.type = AnalysisType.ANALYSIS_TYPE_APK;
+public class DirectoryAnalysisSmali extends AbstractAnalysis {
+	public DirectoryAnalysisSmali(AbstractAnalysis parent) {
+		super.type = AnalysisType.ANALYSIS_TYPE_DIRECTORY_SMALI;
 		this.parent = parent;
 	}
 	
@@ -23,9 +23,12 @@ public class APKAnalysis extends AbstractAnalysis {
 		if(!isType(file, type)) {
 			return null;
 		}
+
+		for(File current : file.listFiles()) {
+			// TODO - analyze class files
+			System.out.println(current.getName());
+		}
 		
-		// TODO - Implement APK analysis
-				
 		return this;
-	}	
+	}
 }

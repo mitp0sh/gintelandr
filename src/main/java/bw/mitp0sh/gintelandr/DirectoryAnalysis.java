@@ -22,14 +22,29 @@ public class DirectoryAnalysis extends AbstractAnalysis {
 	public AbstractAnalysis analyze(File file) {
 		if(!isType(file, type)) {
 			return null;
+		}		
+		
+		for(File current : file.listFiles()) {
+			AbstractAnalysis currentAnalysis = null;			
+			switch(current.getName()) {
+				case DirectoryAnalysisType.SMALI: {					
+					DirectoryAnalysisSmali directoryAnalysisSmali = new DirectoryAnalysisSmali(this);
+					currentAnalysis = directoryAnalysisSmali.analyze(current);
+					if(currentAnalysis != null && currentAnalysis.getClass().equals(DirectoryAnalysisSmali.class)) {						
+						addChild(directoryAnalysisSmali);
+					}
+					break;
+				}
+				default: {
+					break;
+				}
+			}
 		}
-		
-		AbstractAnalysis analysis = new UnknownAnalysis(getParent());
-		DirectoryAnalysis tempAnalysis = new DirectoryAnalysis(getParent());
-		
-		// TODO - Implement directory analysis
-		
-		analysis = tempAnalysis;		
-		return analysis;
+				
+		return this;
+	}
+	
+	class DirectoryAnalysisType {
+		public static final String SMALI = "smali";
 	}
 }
