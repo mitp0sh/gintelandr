@@ -1,8 +1,10 @@
 package bw.mitp0sh.gintelandr;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class DirectoryAnalysis extends AbstractAnalysis {
+public class DirectoryAnalysis extends AbstractFileAnalysis {
 	public DirectoryAnalysis(AbstractAnalysis parent) {
 		super.type = AnalysisType.ANALYSIS_TYPE_DIRECTORY;
 		this.parent = parent;
@@ -24,19 +26,31 @@ public class DirectoryAnalysis extends AbstractAnalysis {
 			return null;
 		}		
 		
+		/* analysis loop */
 		for(File current : file.listFiles()) {
-			AbstractAnalysis currentAnalysis = null;			
-			switch(current.getName()) {
-				case DirectoryAnalysisType.SMALI: {					
-					DirectoryAnalysisSmali directoryAnalysisSmali = new DirectoryAnalysisSmali(this);
-					currentAnalysis = directoryAnalysisSmali.analyze(current);
-					if(currentAnalysis != null && currentAnalysis.getClass().equals(DirectoryAnalysisSmali.class)) {						
-						addChild(directoryAnalysisSmali);
-					}
-					break;
+			AbstractAnalysis currentAnalysis = null;
+			
+			/* setup matchers required for processing decision */
+			Matcher smaliMatcher = Pattern.compile("(^(smali))$|(^(smali_classes\\d*))$").matcher(current.getName()); // construction here - https://regexr.com/55jvu
+			
+			/* case - smali directory processing */			
+			if(smaliMatcher.matches()) {
+				/* extract smali prefix, required later for referencing */
+				String smaliPrefix = smaliMatcher.group(0) != null ? smaliMatcher.group(0) : smaliMatcher.group(3);
+				
+				/* create and trigger new child analysis */
+				DirectoryAnalysisSmali directoryAnalysisSmali = new DirectoryAnalysisSmali(this, smaliPrefix);
+				currentAnalysis = directoryAnalysisSmali.analyze(current);
+				if(currentAnalysis != null && currentAnalysis.getClass().equals(DirectoryAnalysisSmali.class)) {						
+					/* register analysis */
+					addChild(directoryAnalysisSmali);
 				}
-				default: {
-					break;
+			} else {
+				switch(current.getName()) {
+					// TODO - add other cases for extended analysis
+					default: {
+						break;
+					}
 				}
 			}
 		}

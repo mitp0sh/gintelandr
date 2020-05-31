@@ -1,6 +1,8 @@
 package bw.mitp0sh.gintelandr;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileTypeAnalysis extends AbstractAnalysis {
 	public FileTypeAnalysis(AbstractAnalysis parent) {
@@ -20,11 +22,16 @@ public class FileTypeAnalysis extends AbstractAnalysis {
 
 	@Override
 	public AbstractAnalysis analyze(File file) {
-		if(file == null) {
-			return null;
+		if(!isType(file, type)) {
+			return new UnknownAnalysis(getParent());
 		}
 		
-		/* not a file we can analyze */
+		Matcher matcher = Pattern.compile(".*((\\.smali))$").matcher(file.getName()); // generated and taken here: https://regexr.com/55lk2
+		if(matcher.matches()) {			
+			return new FileAnalysisSmali(getParent()).analyze(file);
+		}
+		
+		/* not a file we can analyse */
 		return new UnknownAnalysis(getParent());
 	}
 }

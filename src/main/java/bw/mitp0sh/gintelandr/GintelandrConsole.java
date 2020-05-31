@@ -16,6 +16,7 @@ public class GintelandrConsole {
 		try {
 			cml = commandLineParser.parse(args);
 		} catch (org.apache.commons.cli.ParseException e) {			
+			e.printStackTrace();
 			flog.atSevere().log("unable to parse specified commandline");
 			GintelandrCommandLine.printHelp(null);
 			return;

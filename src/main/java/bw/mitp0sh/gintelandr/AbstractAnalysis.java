@@ -3,6 +3,8 @@ package bw.mitp0sh.gintelandr;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class AbstractAnalysis implements Analyzable {
 	public AnalysisType type = AnalysisType.ANALYSIS_TYPE_UNKNOWN;
@@ -15,7 +17,8 @@ public abstract class AbstractAnalysis implements Analyzable {
 		ANALYSIS_TYPE_FILE_TYPE,
 		ANALYSIS_TYPE_APK,
 		ANALYSIS_TYPE_DIRECTORY,
-		ANALYSIS_TYPE_DIRECTORY_SMALI;
+		ANALYSIS_TYPE_DIRECTORY_SMALI,
+		ANALYSIS_TYPE_FILE_SMALI;
 
 		@Override
 		public String toString() {
@@ -27,6 +30,9 @@ public abstract class AbstractAnalysis implements Analyzable {
 			} else
 			if(this.equals(ANALYSIS_TYPE_DIRECTORY_SMALI)) {
 				return "AT_DIRECTORY_SMALI";
+			} else
+			if(this.equals(ANALYSIS_TYPE_FILE_SMALI)) {
+				return "AT_FILE_SMALI";
 			} else
 			if(this.equals(ANALYSIS_TYPE_FILE_TYPE)) {
 				return "AT_FILE_TYPE";
@@ -120,11 +126,17 @@ public abstract class AbstractAnalysis implements Analyzable {
 	public static boolean isType(File file, AnalysisType analysisType) {
 		boolean type = false;
 		
+		if(file == null) {
+			return type;
+		}
+		
 		/* large heuristic switch to identify analysable files */
 		switch(analysisType) {
 			case ANALYSIS_TYPE_UNKNOWN:
 			case ANALYSIS_TYPE_FILE_TYPE: {
-				/* nothing to do here... */				
+				if(file.isFile()) {					
+					type = true;
+				}				
 				break;
 			} 
 			case ANALYSIS_TYPE_APK: {
@@ -155,6 +167,17 @@ public abstract class AbstractAnalysis implements Analyzable {
 				
 				/* directory successfully identified */
 				type = true;
+				break;
+			} 
+			case ANALYSIS_TYPE_FILE_SMALI: {				
+				Matcher smaliFileExtMatcher = Pattern.compile(".*((\\.smali))$").matcher(file.getName());	
+				if(!smaliFileExtMatcher.matches()) {					
+					break;
+				}				
+				
+				/* smali file successfully identified */
+				type = true;
+				
 				break;
 			} default: {
 				/* nothing to do here as well... */

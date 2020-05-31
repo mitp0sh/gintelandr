@@ -21,7 +21,9 @@ public class GintelandrCommandLineParser {
 	protected static final String OPTION_STRING_VERSION = "v";
 	protected static final String OPTION_STRING_VERSION_LONG = "version";
 	protected static final String OPTION_STRING_INPUT = "i";
-	protected static final String OPTION_STRING_INPUT_LONG = "input";
+	protected static final String OPTION_STRING_INPUT_LONG = "input";	
+	protected static final String OPTION_STRING_MODE = "m";
+	protected static final String OPTION_STRING_MODE_LONG = "mode";
 	
 	static {		
 		Option helpOption = new Option(OPTION_STRING_HELP, OPTION_STRING_HELP_LONG, false, "show this help");
@@ -29,13 +31,15 @@ public class GintelandrCommandLineParser {
 		Option versionOption = new Option(OPTION_STRING_VERSION, OPTION_STRING_VERSION_LONG, false, "show version information");
 		versionOption.setArgs(0);
 		Option inputOption = new Option(OPTION_STRING_INPUT, OPTION_STRING_INPUT_LONG, false, "specify input, either file or directories, multiple seperated by ','");
-		inputOption.setArgs(1);
-		inputOption.setValueSeparator('|');
+		inputOption.setArgs(1);		
+		Option modeOption = new Option(OPTION_STRING_MODE, OPTION_STRING_MODE_LONG, true, "gintelandr run mode. Choose between INTERACTIVE, PROJECT or EXPORT");
+		modeOption.setArgName("MODE");		
 		
 		/* register all available options */
 		OPTIONS.addOption(helpOption);
 		OPTIONS.addOption(versionOption);
 		OPTIONS.addOption(inputOption);
+		OPTIONS.addOption(modeOption);
 	}
 	
 	private CommandLineParser clp = new DefaultParser();
@@ -53,6 +57,7 @@ class GintelandrCommandLine{
 	private ArrayList<String> inputStrList = new ArrayList<>();	
 	private ArrayList<File> inputFileList = new ArrayList<>();
 	private String versionInformation = new Versioning().toString();
+	private ArrayList<String> modeList = new ArrayList<>();
 
 	public GintelandrCommandLine(CommandLine cml) throws ParseException {
 		super();
@@ -60,7 +65,7 @@ class GintelandrCommandLine{
 		
 		if(cml.hasOption(GintelandrCommandLineParser.OPTION_STRING_INPUT)) {
 			String optValue = cml.getOptionValue(GintelandrCommandLineParser.OPTION_STRING_INPUT);
-			String[] values = optValue.split("\\;");
+			String[] values = optValue.split("\\|");
 			if(values != null && values.length != 0) {
 				for (String v : values) {
 					inputStrList.add(v);
@@ -78,6 +83,16 @@ class GintelandrCommandLine{
 					} catch (Throwable t) {
 						continue;
 					}
+				}
+			}
+		}	
+		
+		if(cml.hasOption(GintelandrCommandLineParser.OPTION_STRING_MODE)) {
+			String optValue = cml.getOptionValue(GintelandrCommandLineParser.OPTION_STRING_MODE);
+			String[] values = optValue.split("\\|");
+			if(values != null && values.length != 0) {
+				for (String v : values) {
+					modeList.add(v.trim());
 				}
 			}
 		}
@@ -104,6 +119,10 @@ class GintelandrCommandLine{
 		return cml.hasOption(GintelandrCommandLineParser.OPTION_STRING_INPUT);
 	} 
 	
+	public boolean isMode() {
+		return cml.hasOption(GintelandrCommandLineParser.OPTION_STRING_MODE);
+	}
+	
 	public static void printHelp(String message) {
 		new HelpFormatter().printHelp("gintelandr", GintelandrCommandLineParser.OPTIONS);
 	}
@@ -115,6 +134,16 @@ class GintelandrCommandLine{
 	public ArrayList<File> inputListAsFiles() {
 		return inputFileList;
 	}
+	
+	public boolean hasMode(String mode) {
+		for(String m : modeList) {
+			if(m.equals(mode)) {
+				return true;
+			}
+		}
+		
+		return false;
+	} 
 	
 	public String getVersionInformation() {
 		return versionInformation;
