@@ -18,5 +18,5 @@ public interface Analyzable {
 	public boolean hasChildrenKind(Class<AbstractAnalysis> clazz);
 	public int getNumChildrenKind(Class<AbstractAnalysis> clazz);
 	
-	public AbstractAnalysis analyze(File file);
+	public AbstractAnalysis analyze(File file, Object[] params);
 }

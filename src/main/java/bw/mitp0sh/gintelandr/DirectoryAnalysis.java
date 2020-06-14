@@ -1,6 +1,7 @@
 package bw.mitp0sh.gintelandr;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,7 +22,7 @@ public class DirectoryAnalysis extends AbstractFileAnalysis {
 	}
 
 	@Override
-	public AbstractAnalysis analyze(File file) {
+	public AbstractAnalysis analyze(File file, Object[] params) {
 		if(!isType(file, type)) {
 			return null;
 		}		
@@ -38,9 +39,24 @@ public class DirectoryAnalysis extends AbstractFileAnalysis {
 				/* extract smali prefix, required later for referencing */
 				String smaliPrefix = smaliMatcher.group(0) != null ? smaliMatcher.group(0) : smaliMatcher.group(3);
 				
+				int index = 0;
+				if(smaliPrefix.equals("smali")) {
+					index = 1;
+				} else {
+					index = Integer.parseInt(smaliPrefix.substring(13));
+				}
+				
+				try {
+					DatabaseHelper.insertDex(index, getParent().toString(), current.getAbsolutePath());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				
+				params = new Object[] {index};
+				
 				/* create and trigger new child analysis */
-				DirectoryAnalysisSmali directoryAnalysisSmali = new DirectoryAnalysisSmali(this, smaliPrefix);
-				currentAnalysis = directoryAnalysisSmali.analyze(current);
+				DirectoryAnalysisSmali directoryAnalysisSmali = new DirectoryAnalysisSmali(this);
+				currentAnalysis = directoryAnalysisSmali.analyze(current, params);
 				if(currentAnalysis != null && currentAnalysis.getClass().equals(DirectoryAnalysisSmali.class)) {						
 					/* register analysis */
 					addChild(directoryAnalysisSmali);

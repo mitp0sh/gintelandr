@@ -1,7 +1,6 @@
 package bw.mitp0sh.gintelandr;
 
 import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -18,13 +17,7 @@ public class GintelandrConsole {
 		flog.atInfo().log("Gintelandr is warming-up! Please wait...");
 		
 		/* register shutdown hook for required clean-up */
-		Runtime.getRuntime().addShutdownHook(new Thread() 
-	    { 	
-			public void run() {	    		    	
-			  flog.atInfo().log("shutdown hook entered. Starting clean-up now...");
-			  DatabaseHelper.closeTmpDB();			  
-			} 
-	    });
+		Runtime.getRuntime().addShutdownHook(new GintelandrShutdownHookThread());
 		
 		/* start commandline parsing */
 		GintelandrCommandLineParser commandLineParser = new GintelandrCommandLineParser();
@@ -56,11 +49,11 @@ public class GintelandrConsole {
 			cml.getModes().put(GintelandrRunMode.INTERACTIVE.toString(), GintelandrRunMode.INTERACTIVE);
 		}
 		
-		try {
-			DatabaseHelper.openTmpDB();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(cml.getModes().get(GintelandrRunMode.INTERACTIVE.toString()) != null) {
+			DatabaseHelper.initDB(true, null);
+		} else {
+			// TODO - MAYBE SOME CASE HANDLING WILL BE NEEDED HERE !!!			
+			DatabaseHelper.initDB(false, /* TODO - WE NEED TO SET THE DB PATH HERE !!! */ null);
 		}
 		
 		/* this is the main entry point into analysis - let the game begin */
@@ -73,5 +66,13 @@ public class GintelandrConsole {
 				analysisList.add(currentAnalysis);
 			}
 		}
+	}
+	
+	static class GintelandrShutdownHookThread extends Thread implements Runnable {
+		@Override
+		public void run() {
+			flog.atInfo().log("shutdown hook entered. Starting clean-up now...");
+			DatabaseHelper.finalizeDB();
+		}		
 	}
 }

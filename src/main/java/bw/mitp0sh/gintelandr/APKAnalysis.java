@@ -19,7 +19,7 @@ public class APKAnalysis extends AbstractAnalysis {
 	}
 
 	@Override
-	public AbstractAnalysis analyze(File file) {
+	public AbstractAnalysis analyze(File file, Object[] params) {
 		if(!isType(file, type)) {
 			return null;
 		}

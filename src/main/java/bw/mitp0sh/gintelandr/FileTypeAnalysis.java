@@ -21,14 +21,14 @@ public class FileTypeAnalysis extends AbstractAnalysis {
 	}
 
 	@Override
-	public AbstractAnalysis analyze(File file) {
+	public AbstractAnalysis analyze(File file, Object[] params) {
 		if(!isType(file, type)) {
 			return new UnknownAnalysis(getParent());
 		}
 		
 		Matcher matcher = Pattern.compile(".*((\\.smali))$").matcher(file.getName()); // generated and taken here: https://regexr.com/55lk2
 		if(matcher.matches()) {			
-			return new FileAnalysisSmali(getParent()).analyze(file);
+			return new FileAnalysisSmali(getParent()).analyze(file, params);
 		}
 		
 		/* not a file we can analyse */

@@ -187,4 +187,9 @@ public abstract class AbstractAnalysis implements Analyzable {
 		
 		return type;
 	}
+	
+	@Override
+	public String toString() {
+		return type.toString();
+	}
 }

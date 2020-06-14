@@ -19,7 +19,7 @@ public class UnknownAnalysis extends AbstractAnalysis {
 	}
 
 	@Override
-	public AbstractAnalysis analyze(File file) {
+	public AbstractAnalysis analyze(File file, Object[] params) {
 		return this;
 	}
 }
